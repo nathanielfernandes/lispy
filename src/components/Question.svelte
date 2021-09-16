@@ -41,7 +41,7 @@
 
   .question .name {
     margin-top: 0;
-    color: rgb(254, 99, 48);
+    color: #fe6330;
   }
 
   .question .number {
