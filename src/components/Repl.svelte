@@ -26,8 +26,10 @@
   }
 
   let session_theme;
+  let session_fontsize;
 
   const storedTheme = localStorage.getItem("theme");
+  const storedFontSize = localStorage.getItem("fontsize");
 
   export const theme = writable(storedTheme);
   theme.subscribe((value) => {
@@ -38,9 +40,19 @@
     session_theme = value;
   });
 
+  export const fontsize = writable(storedFontSize);
+  fontsize.subscribe((value) => {
+    if (value === null) {
+      value = 15;
+    }
+    localStorage.setItem("fontsize", value);
+    session_fontsize = Number(value);
+  });
+
   function setup_ace() {
     editor = ace.edit(code_editor);
     updateTheme();
+    updateFontSize();
     editor.session.setMode("ace/mode/lisp");
     editor.resize();
   }
@@ -48,6 +60,11 @@
   function updateTheme() {
     theme.set(session_theme);
     editor.setTheme(`ace/theme/${$theme}`);
+  }
+
+  function updateFontSize() {
+    fontsize.set(session_fontsize);
+    editor.setFontSize(session_fontsize);
   }
 
   function format_code() {
@@ -69,8 +86,12 @@
 
     if (res.message === undefined) {
       let error = Array.from(res.output.matchAll(ERROR));
+      let is_fatal = res.output.includes("fatal error encountered in SBCL");
       if (error.length > 0) {
         last_output = error[0][1];
+        last_error = res.output;
+      } else if (is_fatal) {
+        last_output = "fatal error encountered in SBCL";
         last_error = res.output;
       } else {
         last_output = res.output.split("|").filter((o) => o != "");
@@ -144,15 +165,18 @@
       {/if}
     </div>
   </div>
-  <button on:click={run_code}>Submit</button>
-  <button on:click={show_solution} id="show_solution">Show Solution</button>
-  <button on:click={editor.setValue(function_signature)} id="show_solution">
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <img
-      style="width: 30%;"
-      src="https://htmlacademy.ru/assets/icons/reload-6x-white.png"
-    />
-  </button>
+  <div>
+    <button on:click={run_code}>Submit</button>
+    <button on:click={show_solution} id="show_solution">Show Solution</button>
+    <button on:click={editor.setValue(function_signature)} id="show_solution">
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <img
+        style="width: 30%;"
+        src="https://htmlacademy.ru/assets/icons/reload-6x-white.png"
+      />
+    </button>
+  </div>
+
   <div id="options">
     <span>Theme:</span>
     <select bind:value={session_theme} on:change={updateTheme}>
@@ -162,6 +186,13 @@
         </option>
       {/each}
     </select>
+    <br />
+    <span>FontSize:</span>
+    <input
+      type="number"
+      bind:value={session_fontsize}
+      on:change={updateFontSize}
+    />
   </div>
 </main>
 
@@ -171,24 +202,29 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.min.js"></script>
 </svelte:head>
 
-<main />
-
 <style>
   code {
     font-family: "JetBrains Mono", monospace;
   }
 
+  #options {
+    margin-top: 0;
+  }
+
   #output {
     /* border-style: solid; */
     /* border-radius: 8px; */
+    overflow-y: scroll;
     margin: 0.1rem;
     width: 40%;
     padding: 0.5rem;
+    height: 450px;
   }
 
   #repl {
     display: flex;
     margin: 0.5rem 0;
+    margin-bottom: 0;
   }
 
   #editor-container {
@@ -196,7 +232,7 @@
     border-radius: 8px;
     margin: 0.1rem;
     width: 60%;
-    height: 500px;
+    height: 450px;
     display: inline-block;
     position: relative;
     overflow: hidden;
@@ -237,5 +273,19 @@
   .solution {
     width: 100%;
     height: 90%;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    #repl {
+      flex-direction: column;
+    }
+
+    #editor-container {
+      width: 100%;
+    }
+
+    #output {
+      width: 100%;
+    }
   }
 </style>
