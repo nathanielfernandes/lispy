@@ -24,7 +24,7 @@
     ],
     "function_signature": "(defun monkey_trouble (a_smile b_smile)\n\t())",
     "test_cases": ["(equal (monkey_trouble t t) t)", "(equal (monkey_trouble nil nil) t)", "(equal (monkey_trouble t nil) nil)", "(equal (monkey_trouble nil t) nil)"],
-    "solution": "(defun monkey_trouble (a_smile b_smile)\n\t(equal a_smile b_smile)"
+    "solution": "(defun monkey_trouble (a_smile b_smile)\n\t(equal a_smile b_smile))"
 },
 
 {
@@ -140,7 +140,22 @@
     "function_signature": "(defun missing_char (str n)\n\t())",
     "test_cases": ["(equal (missing_char \"kitten\" 1) \"ktten\")", "(equal (missing_char \"kitten\" 0) \"itten\")", "(equal (missing_char \"kitten\" 4) \"kittn\")", "(equal (missing_char \"Hi\" 0) \"i\")", "(equal (missing_char \"Hi\" 1) \"H\")", "(equal (missing_char \"code\" 0) \"ode\")", "(equal (missing_char \"code\" 1) \"cde\")", "(equal (missing_char \"code\" 2) \"coe\")", "(equal (missing_char \"code\" 3) \"cod\")", "(equal (missing_char \"chocolate\" 8) \"chocolat\")"   ],
     "solution": "(defun missing_char (str n)\n\t(remove (aref str n) str :start n))"
+},
+
+
+{
+  "name": "factorial",
+  "description": "Factorial is a non-negative integer. It is the product of all positive integers less than or equal to that number you ask for factorial.",
+  "examples": [
+    "(factorial 5) → 120",
+    "(factorial 6) → 720",
+    "(factorial 1) → 1"
+  ],
+  "function_signature": "(defun factorial (n)\n\t())",
+  "test_cases": ["(equal (factorial 5) 120)", "(equal (factorial 6) 720)", "(equal (factorial 1) 1)", "(equal (factorial 12) 479001600)", "(equal (factorial 8) 40320)", "(equal (factorial 3) 6)", "(equal (factorial 2) 2)", "(equal (factorial 0) 1)"],
+  "solution": "(defun factorial (n)\n\t(if (= n 0)\n\t\t1\n\t\t(* n (factorial (- n 1)))))"
 }
+
 
 ]
 
